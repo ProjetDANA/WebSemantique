@@ -3,18 +3,20 @@ import pandas as pd
 import pathlib
 
 data_path = pathlib.Path("datas")
-unformated_datas = pathlib.Path("dataset_name.csv")
-cleaned_datas = pathlib.Path("cleaned_dataset_name.csv")
+unformated_datas = pathlib.Path("1900_2021_DISASTERS.xlsx - emdat data copy.csv")
+cleaned_datas = pathlib.Path("1900_2021_DISASTERS.csv")
 
 datas = pd.read_csv(data_path / unformated_datas, encoding="utf-8")
 
-# Colonnes inutiles
-useless_cols = [
-    "cols à enlever"
+# Colonnes utiles
+usable_cols = [
+    'Year', 'Seq', 'Disaster Group', 'Disaster Subgroup', 'Disaster Type', 
+    'Disaster Subtype', 'Event Name', 'Country', 'ISO', 'Region', 'Continent', 
+    'Start Year', 'Start Month', 'Total Deaths', 'Total Affected', "Total Damages ('000 US$)",
+    'Latitude', 'Longitude'
 ]
 
-for cols in useless_cols:
-    datas.drop(cols, inplace=True, axis=1)
+clean_df = datas[usable_cols]
 
 # save ce qui nous intéresse
-datas.to_csv(data_path / cleaned_datas, index=False, encoding="utf-8")
+clean_df.to_csv(data_path / cleaned_datas, index=False, encoding="utf-8")
