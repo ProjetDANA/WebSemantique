@@ -11,12 +11,12 @@ datas = pd.read_csv(data_path / unformated_datas, encoding="utf-8")
 # Colonnes utiles
 usable_cols = [
     'Year', 'Seq', 'Disaster Group', 'Disaster Subgroup', 'Disaster Type', 
-    'Disaster Subtype', 'Event Name', 'Country', 'ISO', 'Region', 'Continent', 
-    'Start Year', 'Start Month', 'Total Deaths', 'Total Affected', "Total Damages ('000 US$)",
+    'Disaster Subtype', 'Event Name', 'Country', 'ISO', 'Region', 'Continent', 'Start Month', 'Total Deaths', 'Total Affected', "Total Damages ('000 US$)",
     'Latitude', 'Longitude'
 ]
 
 clean_df = datas[usable_cols]
+clean_df.rename(columns={"Total Damages ('000 US$)": "Total Damages USD"}, inplace=True)
 
 # save ce qui nous intéresse
 clean_df.to_csv(data_path / cleaned_datas, index=False, encoding="utf-8")

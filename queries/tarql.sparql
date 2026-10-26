@@ -1,0 +1,61 @@
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
+PREFIX schema: <http://schema.org/>
+PREFIX dbo:    <http://dbpedia.org/ontology/>
+PREFIX geo:    <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX ex:     <http://example.org/disaster/>
+
+# identifier une catastrophe
+CONSTRUCT {
+    ?disasterURI a dbo:Disaster, schema:Event ;
+                 rdfs:label ?event_name ;
+
+                 dbo:type ?disaster_type ;
+                 schema:category ?disaster_group ;
+                 ex:disasterSubtype ?disaster_subtype ;
+                 ex:disasterSubgroup ?disaster_subgroup ;
+
+                 dbo:year ?year ;
+                 dbo:month ?start_month ;
+
+                 dbo:region ?region ;
+                 dbo:country ?country ;
+                 dbo:continent ?continent ;
+                 dbo:isoCode ?iso ;
+                 geo:lat ?latitude ;
+                 geo:long ?longitude ;
+
+                 dbo:damage ?total_damage ;
+                 dbo:deathToll ?total_death ;
+                 ex:totalAffected ?total_affected .
+}
+FROM <file:datas/1900_2021_DISASTERS.csv> 
+
+# typage des vrais colonnes de notre catastrophe
+WHERE {
+    # évite les doublons, code unique
+    BIND(IRI(CONCAT("http://example.org/disaster/", STR(?Year), "-", STR(?Seq), "-", STR(?ISO))) AS ?disasterURI)
+
+    # typages
+    BIND(STRLANG(?Event_Name, "en") AS ?event_name)
+
+    BIND(STRLANG(?Disaster_Type, "en") AS ?disaster_type)
+    BIND(STRLANG(?Disaster_Group, "en") AS ?disaster_group)
+    BIND(STRLANG(?Disaster_Subtype, "en") AS ?disaster_subtype)
+    BIND(STRLANG(?Disaster_Subgroup, "en") AS ?disaster_subgroup)
+
+    BIND(STRDT(?Year, xsd:integer) AS ?year)
+    BIND(STRDT(STR(INT(?Start_Month)), xsd:integer) AS ?start_month)
+
+    BIND(STRLANG(?Region, "en") AS ?region)
+    BIND(STRLANG(?Country, "en") AS ?country)
+    BIND(STRLANG(?Continent, "en") AS ?continent)
+    BIND(STR(?ISO) AS ?iso)
+    BIND(STRDT(?Latitude, xsd:float) AS ?latitude)
+    BIND(STRDT(?Longitude, xsd:float) AS ?longitude)
+
+    BIND((xsd:decimal(?Total_Damages_USD) * 1000) AS ?total_damage)
+    BIND(STRDT(STR(INT(?Total_Deaths)), xsd:integer) AS ?total_death)
+    BIND(STRDT(STR(INT(?Total_Affected)), xsd:integer) AS ?total_affected)
+}
