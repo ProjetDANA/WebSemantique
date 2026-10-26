@@ -6,6 +6,8 @@ PREFIX dbo:    <http://dbpedia.org/ontology/>
 PREFIX geo:    <http://www.w3.org/2003/01/geo/wgs84_pos#>
 PREFIX ex:     <http://example.org/disaster/>
 
+# commande : tarql-1.2/bin/tarql queries/tarql.sparql > datas/disasters.ttl
+
 # identifier une catastrophe
 CONSTRUCT {
     ?disasterURI a dbo:Disaster, schema:Event ;
@@ -30,7 +32,7 @@ CONSTRUCT {
                  dbo:deathToll ?total_death ;
                  ex:totalAffected ?total_affected .
 }
-FROM <file:datas/1900_2021_DISASTERS.csv> 
+FROM <file:../datas/1900_2021_DISASTERS.csv> 
 
 # typage des vrais colonnes de notre catastrophe
 WHERE {
@@ -46,7 +48,8 @@ WHERE {
     BIND(STRLANG(?Disaster_Subgroup, "en") AS ?disaster_subgroup)
 
     BIND(STRDT(?Year, xsd:integer) AS ?year)
-    BIND(STRDT(STR(INT(?Start_Month)), xsd:integer) AS ?start_month)
+    # float dans csv mais int en vrai (12.0 = 12 = decembre)
+    BIND(xsd:integer(xsd:decimal(?Start_Month)) AS ?start_month)
 
     BIND(STRLANG(?Region, "en") AS ?region)
     BIND(STRLANG(?Country, "en") AS ?country)
@@ -56,6 +59,7 @@ WHERE {
     BIND(STRDT(?Longitude, xsd:float) AS ?longitude)
 
     BIND((xsd:decimal(?Total_Damages_USD) * 1000) AS ?total_damage)
-    BIND(STRDT(STR(INT(?Total_Deaths)), xsd:integer) AS ?total_death)
-    BIND(STRDT(STR(INT(?Total_Affected)), xsd:integer) AS ?total_affected)
+    # float dans csv mais int en vrai
+    BIND(xsd:integer(xsd:decimal(?Total_Deaths)) AS ?total_death)
+    BIND(xsd:integer(xsd:decimal(?Total_Affected)) AS ?total_affected)
 }
