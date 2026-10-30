@@ -37,7 +37,7 @@ FROM <file:../datas/1900_2021_DISASTERS.csv>
 # typage des vrais colonnes de notre catastrophe
 WHERE {
     # évite les doublons, code unique
-    BIND(IRI(CONCAT("http://example.org/disaster/", STR(?Year), "-", STR(?Seq), "-", STR(?ISO))) AS ?disasterURI)
+    BIND(IRI(CONCAT("http://example.org/disaster/", STR(?Year), "-", ENCODE_FOR_URI(LCASE(STR(?Country))), "-", ENCODE_FOR_URI(LCASE(STR(?Disaster_Type))), "-", STR(?Seq))) AS ?disasterURI)
 
     # typages
     BIND(STRLANG(?Event_Name, "en") AS ?event_name)
