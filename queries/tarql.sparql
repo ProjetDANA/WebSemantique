@@ -63,3 +63,27 @@ WHERE {
     BIND(xsd:integer(xsd:decimal(?Total_Deaths)) AS ?total_death)
     BIND(xsd:integer(xsd:decimal(?Total_Affected)) AS ?total_affected)
 }
+
+
+# Requête
+# Quels sont les pays les plus touchés par les séismes entre 2000 et 2020 avec plus de 1000 morts ?
+
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?pays (COUNT(DISTINCT ?seisme) AS ?nb_seismes)
+WHERE {
+    ?seisme dbo:type "Earthquake"@en ;
+            dbo:country ?pays ;
+            dbo:deathToll ?nb_mort ;
+            dbo:year ?year.
+
+    FILTER (?nb_mort > 1000)
+    FILTER (
+        ?year >= 2000 &&
+        ?year <= 2020
+    )
+}
+GROUP BY ?pays
+ORDER BY DESC(?nb_seismes)
