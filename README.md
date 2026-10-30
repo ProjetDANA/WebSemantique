@@ -4,8 +4,6 @@
 
 ## Accès aux données
 
-
-
 Pour pouvoir exécuter des requêtes sur notre jeu de données, il suffit d'être sur le réseau universitaire et de se connecter à :
 
 * [serveur GRP2](http://podman.ensinfo.sciences.univ-nantes.prive:8310/#/)
