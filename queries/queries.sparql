@@ -20,3 +20,27 @@ WHERE {
 }
 GROUP BY ?pays
 ORDER BY DESC(?nb_seismes)
+
+# Quelles catastrophes ont eu lieu un vendredi 13 (pas de chance)
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX db: <http://dbpedia.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+SELECT ?disaster ?name ?date
+WHERE {
+  ?disaster a dbo:Disaster ;
+  dbo:date ?date ;
+  dbo:day ?day
+  
+  OPTIONAL { ?disaster rdfs:label ?name . }
+  
+  FILTER(?day = 13)
+  # 13 avril 1900 = vendredi
+  BIND("1900-04-13"^^xsd:date as ?friday)
+  #ecart entre premier vendredi et date de la catastrophe
+  BIND(DAY(?date - ?friday) AS ?diff)
+  # si mod = 0, c'est un vendredi 13
+  FILTER((?diff - (FLOOR(?diff / 7) * 7)) = 0)
+}
+ORDER BY DESC(?date)
