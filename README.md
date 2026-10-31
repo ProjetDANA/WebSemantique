@@ -21,7 +21,7 @@ Chaque catastrophe est modélisée sous la forme d'une entité `dbo:Disaster` et
 * **Classification** : L'événement est défini par sa catégorie (`schema:category`), son sous-groupe (`ex:disasterSubgroup`), son type (`dbo:type`) et son sous-type (`ex:disasterSubtype`).
 
 
-* **Temporalité** : L'occurrence est datée avec précision par l'année (`dbo:year`) et le mois de début (`dbo:month`).
+* **Temporalité** : L'occurrence est datée avec précision par l'année (`dbo:year`) et le mois de début (`dbo:month`) ainsi que le jour de début (`dbo:day`). Pour les comparaisons avec d'autre groupes nous avons rajouté (`dbo:date`) au format `AAAA-MM-DD`
 
 
 * **Géographie** : La localisation inclut les coordonnées (`geo:lat`, `geo:long`), le pays (`dbo:country`), le continent (`dbo:continent`), la région (`dbo:region`) et le code ISO (`dbo:isoCode`).

@@ -20,6 +20,8 @@ CONSTRUCT {
 
                  dbo:year ?year ;
                  dbo:month ?start_month ;
+                 dbo:day ?start_day ;
+                 dbo:date ?start_date ;
 
                  dbo:region ?region ;
                  dbo:country ?country ;
@@ -50,6 +52,12 @@ WHERE {
     BIND(STRDT(?Year, xsd:integer) AS ?year)
     # float dans csv mais int en vrai (12.0 = 12 = decembre)
     BIND(xsd:integer(xsd:decimal(?Start_Month)) AS ?start_month)
+    BIND(xsd:integer(xsd:decimal(?Start_Day)) AS ?start_day)
+
+    # formatter une date
+    BIND(IF(?start_month < 10, CONCAT("0", STR(?start_month)), STR(?start_month)) AS ?format_month)
+    BIND(IF(?start_day < 10, CONCAT("0", STR(?start_day)), STR(?start_day)) AS ?format_day)
+    BIND(xsd:date(CONCAT(STR(?year), "-", ?format_month, "-", ?format_day)) AS ?start_date)
 
     BIND(STRLANG(?Region, "en") AS ?region)
     BIND(STRLANG(?Country, "en") AS ?country)

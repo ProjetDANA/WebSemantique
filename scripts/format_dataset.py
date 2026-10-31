@@ -23,6 +23,7 @@ usable_cols = [
     "Region",
     "Continent",
     "Start Month",
+    "Start Day",
     "Total Deaths",
     "Total Affected",
     "Total Damages ('000 US$)",
