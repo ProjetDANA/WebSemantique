@@ -44,3 +44,36 @@ WHERE {
   FILTER((?diff - (FLOOR(?diff / 7) * 7)) = 0)
 }
 ORDER BY DESC(?date)
+
+# Nombre de morts dus à des catastrophes vs accidents sur les 20 dernieres années du dataset:
+PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
+PREFIX schema:  <http://schema.org/>
+PREFIX ex: <http://example.org/crash/property/>
+PREFIX dbo:     <http://dbpedia.org/ontology/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+SELECT ?annee
+       (SUM(IF(?categorie = "Disaster", ?morts, 0)) AS ?totalDisasters)
+       (SUM(IF(?categorie = "Accident", ?morts, 0)) AS ?totalAccidents)
+WHERE {
+  {
+    ?e a dbo:Disaster ;
+       dbo:deathToll ?morts ;
+       dbo:date ?d .
+    BIND("Disaster" AS ?categorie)
+    BIND(YEAR(?d) AS ?annee)
+  }
+  UNION
+  {
+    ?e a schema:Event ;
+       dcterms:date ?d ;
+       ex:passengersFatalities|ex:groundFatalities ?morts .
+    BIND("Accident" AS ?categorie)
+    BIND(YEAR(?d) AS ?annee)
+  }
+    FILTER(?annee <= 2009 && ?annee >= 1908) # dataset accident s'arrete à 2009
+}
+GROUP BY ?annee
+ORDER BY DESC(?annee)
+LIMIT 20
