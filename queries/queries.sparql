@@ -77,3 +77,55 @@ WHERE {
 GROUP BY ?annee
 ORDER BY DESC(?annee)
 LIMIT 20
+
+# Pour chaque continent, quel type de catastrophe a fait le plus de morts,
+# et quelle part des morts du continent cela représente-t-il ?
+
+PREFIX dbo: <http://dbpedia.org/ontology/>
+
+SELECT ?continent ?type_le_plus_meurtrier ?morts ?total_continent ?pourcentage
+WHERE {
+  # 1) total des morts par continent et par type
+  {
+    SELECT ?continent ?type_le_plus_meurtrier (SUM(?d) AS ?morts)
+    WHERE {
+      ?e a dbo:Disaster ;
+         dbo:continent ?continent ;
+         dbo:type ?type_le_plus_meurtrier ;
+         dbo:deathToll ?d .
+    }
+    GROUP BY ?continent ?type_le_plus_meurtrier
+  }
+
+  # 2) le maximum de ces totaux pour chaque continent
+  {
+    SELECT ?continent (MAX(?t) AS ?morts)
+    WHERE {
+      {
+        SELECT ?continent ?type (SUM(?d) AS ?t)
+        WHERE {
+          ?e a dbo:Disaster ;
+             dbo:continent ?continent ;
+             dbo:type ?type ;
+             dbo:deathToll ?d .
+        }
+        GROUP BY ?continent ?type
+      }
+    }
+    GROUP BY ?continent
+  }
+
+  # 3) total des morts du continent, tous types confondus
+  {
+    SELECT ?continent (SUM(?d) AS ?total_continent)
+    WHERE {
+      ?e a dbo:Disaster ;
+         dbo:continent ?continent ;
+         dbo:deathToll ?d .
+    }
+    GROUP BY ?continent
+  }
+
+  BIND(ROUND(100 * ?morts / ?total_continent) AS ?pourcentage)
+}
+ORDER BY DESC(?morts)
