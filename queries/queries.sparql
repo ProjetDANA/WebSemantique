@@ -129,3 +129,43 @@ WHERE {
   BIND(ROUND(100 * ?morts / ?total_continent) AS ?pourcentage)
 }
 ORDER BY DESC(?morts)
+
+# Pour Chaque pays qu'elle est la catastrophe naturelle qui leurs coute le plus d'argent
+
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?country ?type ?totalDamage
+WHERE {
+    {
+        SELECT ?country ?type (SUM(?damage) AS ?totalDamage)
+        WHERE {
+            ?disaster a dbo:Disaster ;
+                      dbo:country ?country ;
+                      dbo:type ?type ;
+                      dbo:damage ?damage .
+        }
+        GROUP BY ?country ?type
+    }
+
+    {
+        SELECT ?country (MAX(?damageByType) AS ?maxDamage)
+        WHERE {
+            {
+                SELECT ?country ?type (SUM(?damage) AS ?damageByType)
+                WHERE {
+                    ?disaster a dbo:Disaster ;
+                              dbo:country ?country ;
+                              dbo:type ?type ;
+                              dbo:damage ?damage .
+                }
+                GROUP BY ?country ?type
+            }
+        }
+        GROUP BY ?country
+    }
+
+    FILTER(?totalDamage = ?maxDamage)
+}
+ORDER BY DESC(?totalDamage)
